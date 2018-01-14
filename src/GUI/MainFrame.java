@@ -1,6 +1,7 @@
 package GUI;
 
 import javax.swing.*;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +11,7 @@ import java.awt.event.ActionListener;
 public class MainFrame extends JFrame
 {
     // Данные.
+    private JTable booksTable;
     private JButton filterButton;
     private JButton addButton;
     private JButton searchButton;
@@ -37,7 +39,12 @@ public class MainFrame extends JFrame
         Container container = getContentPane();
 
         // Инициализация таблицы.
-        JTable booksTable = new JTable();
+        booksTable = new JTable(new MyTableModel());
+        booksTable.setPreferredScrollableViewportSize(new Dimension(670, 400));
+        setTableColumnsWidth(booksTable, 100, 400, 40, 80, 80);
+
+        // Инициализация панели прокрутки.
+        JScrollPane scrollPane = new JScrollPane(booksTable);
 
         // Инициализация панели кнопок.
         JPanel buttonsPanel = new JPanel();
@@ -75,8 +82,21 @@ public class MainFrame extends JFrame
         buttonsPanel.add(deleteButton);
 
         // Добавление остальных компоенетов.
-        container.add(booksTable, BorderLayout.WEST);
+        container.add(scrollPane, BorderLayout.WEST);
         container.add(buttonsPanel, BorderLayout.EAST);
+    }
+
+    // Установка ширины столблов таблицы.
+    private void setTableColumnsWidth(JTable table, int... widths)
+    {
+        // Получение модели.
+        TableColumnModel tableColumnModel = table.getColumnModel();
+
+        // Установка ширины столбцов.
+        for (int i = 0; i < widths.length; i++)
+        {
+            tableColumnModel.getColumn(i).setMaxWidth(widths[i]);
+        }
     }
 
 
