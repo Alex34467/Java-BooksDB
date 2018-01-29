@@ -1,19 +1,20 @@
 package GUI;
 
+import Tools.ListModelTools;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
 
 
 // Окно добавления авторов.
 public class AuthorsFrame extends JDialog
 {
     // Данные.
-    private String[] authors = {"a", "ab", "abc", "abcd", "abcde", "abcdef", "absdefg", "abcdefgh", "abcdefghi", "abcdefghij", "abcdefghijk", "abcdefghijkl", "abcdefghijklm"};
+    private String[] authors;
+    private DefaultListModel<String> authorsListModel = new DefaultListModel<>();
     private ButtonClickListener buttonClickListener;
     private MyDocumentListener documentListener;
 
@@ -38,6 +39,14 @@ public class AuthorsFrame extends JDialog
         makeGUI();
     }
 
+    // Отображение.
+    public String showDialog()
+    {
+        setVisible(true);
+
+        return authorTextField.getText();
+    }
+
     // Создание интерфейса.
     private void makeGUI()
     {
@@ -49,7 +58,7 @@ public class AuthorsFrame extends JDialog
         authorTextField.getDocument().addDocumentListener(documentListener);
 
         // Инициализация списка авторов.
-        authorsList = new JList<>(createJListModel());
+        authorsList = new JList<>(authorsListModel);
         JScrollPane authorsScrollPane = new JScrollPane();
         authorsScrollPane.setViewportView(authorsList);
 
@@ -77,58 +86,6 @@ public class AuthorsFrame extends JDialog
         container.add(authorsButtonsPanel, BorderLayout.PAGE_END);
     }
 
-    // Создание модели.
-    private ListModel<String> createJListModel()
-    {
-        // Создание модели.
-        DefaultListModel<String> model = new DefaultListModel<>();
-
-        // Заполнение модели.
-        for (String author : authors)
-        {
-            model.addElement(author);
-        }
-
-        // Возврат модели.
-        return model;
-    }
-
-    // Фильтрация модели.
-    private void filter()
-    {
-        // Данные.
-        String text = authorTextField.getText();
-        DefaultListModel<String> model = (DefaultListModel<String>)authorsList.getModel();
-
-        // Фильтрация.
-        for (String author : authors)
-        {
-            if (!author.contains(text))
-            {
-                if (model.contains(author))
-                {
-                    model.removeElement(author);
-                }
-            }
-            else
-            {
-                if (!model.contains(author))
-                {
-                    model.addElement(author);
-                }
-            }
-        }
-
-        // Сортировка.
-        java.util.List<String> list = Collections.list(model.elements());
-        Collections.sort(list);
-        model.clear();
-        for (String str : list)
-        {
-            model.addElement(str);
-        }
-    }
-
     // Обработчик событий нажантия кнопок.
     private class ButtonClickListener implements ActionListener
     {
@@ -143,7 +100,6 @@ public class AuthorsFrame extends JDialog
             switch (command)
             {
                 case "Add":
-                    break;
                 case "Cancel":
                     AuthorsFrame.this.dispose();
                     break;
@@ -158,14 +114,14 @@ public class AuthorsFrame extends JDialog
         @Override
         public void insertUpdate(DocumentEvent e)
         {
-            AuthorsFrame.this.filter();
+            ListModelTools.filterByText(authorsListModel, authorTextField.getText(), authors, true);
         }
 
         // Удаление текста.
         @Override
         public void removeUpdate(DocumentEvent e)
         {
-            AuthorsFrame.this.filter();
+            ListModelTools.filterByText(authorsListModel, authorTextField.getText(), authors, true);
         }
 
         // Изменение текста.
