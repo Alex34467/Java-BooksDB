@@ -149,9 +149,14 @@ public class BookFrame extends JDialog
         myAdditionalDataPanel.setPreferredSize(new Dimension(400, 75));
         myAdditionalDataPanel.setLayout(new BorderLayout());
 
+        // Инициализация центральной панели.
+        JPanel centralPanel = new JPanel();
+        centralPanel.setPreferredSize(new Dimension(400, 40));
+        centralPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+
         // Инициализация панели года.
         JPanel yearPanel = new JPanel();
-        yearPanel.setPreferredSize(new Dimension(100, 40));
+        yearPanel.setPreferredSize(new Dimension(70, 40));
         yearPanel.setLayout(new BoxLayout(yearPanel, BoxLayout.Y_AXIS));
 
         // Инициализация элементов панели года.
@@ -165,7 +170,7 @@ public class BookFrame extends JDialog
 
         // Инициализация панели языка.
         JPanel langPanel = new JPanel();
-        langPanel.setPreferredSize(new Dimension(200, 40));
+        langPanel.setPreferredSize(new Dimension(90, 40));
         langPanel.setLayout(new BoxLayout(langPanel, BoxLayout.Y_AXIS));
 
         // Инициализация элементов панели языка.
@@ -177,9 +182,24 @@ public class BookFrame extends JDialog
         langPanel.add(langLabel);
         langPanel.add(langTextField);
 
+        // Инициализация панели чтения.
+        JPanel readPanel = new JPanel();
+        readPanel.setPreferredSize(new Dimension(110, 40));
+        readPanel.setLayout(new BoxLayout(readPanel, BoxLayout.Y_AXIS));
+
+        // Инициализация элементов панель чтения.
+        JLabel readLabel = new JLabel("Чтение");
+        readLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        String[] readStates = {"Не прочитано", "Чтение", "Прочитано"};
+        JComboBox readComboBox = new JComboBox(readStates);
+
+        // Добавление элементов панели чтения.
+        readPanel.add(readLabel);
+        readPanel.add(readComboBox);
+
         // Инициализация панели расширения файла.
         JPanel filePanel = new JPanel();
-        filePanel.setPreferredSize(new Dimension(100, 40));
+        filePanel.setPreferredSize(new Dimension(90, 40));
         filePanel.setLayout(new BoxLayout(filePanel, BoxLayout.Y_AXIS));
 
         // Инициализация элементов панели расширения файла.
@@ -190,6 +210,12 @@ public class BookFrame extends JDialog
         // Добавление элементов панели расширения файла.
         filePanel.add(fileLabel);
         filePanel.add(fileTextField);
+
+        // Добавление элементов на центральную панель.
+        centralPanel.add(yearPanel);
+        centralPanel.add(langPanel);
+        centralPanel.add(readPanel);
+        centralPanel.add(filePanel);
 
         // Инициализация панели действий.
         JPanel actionPanel = new JPanel();
@@ -206,9 +232,7 @@ public class BookFrame extends JDialog
         actionPanel.add(cancelButton);
 
         // Добавление панелей.
-        myAdditionalDataPanel.add(yearPanel, BorderLayout.LINE_START);
-        myAdditionalDataPanel.add(langPanel, BorderLayout.CENTER);
-        myAdditionalDataPanel.add(filePanel, BorderLayout.LINE_END);
+        myAdditionalDataPanel.add(centralPanel, BorderLayout.CENTER);
         myAdditionalDataPanel.add(actionPanel, BorderLayout.PAGE_END);
 
         // Возврат панели.
