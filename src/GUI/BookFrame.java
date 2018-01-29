@@ -1,18 +1,31 @@
 package GUI;
 
+import Tools.ListModelTools;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 // Окно добавления / редактирования книги.
 public class BookFrame extends JDialog
 {
+    // Данные.
+    private String[] bookAuthors;
+    private DefaultListModel<String> authorsListModel = new DefaultListModel<>();
+    private ButtonClickListener buttonClickListener;
+
+
     // Конструктор.
     public BookFrame(JFrame owner, String title, boolean modal)
     {
         super(owner, title, modal);
         setBounds(500, 500, 400, 315);
         setLayout(new BorderLayout());
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+        // Инициализация обработчика нажатий кнопок.
+        buttonClickListener = new ButtonClickListener();
 
         // Создание интерфейса.
         makeGUI();
@@ -71,8 +84,7 @@ public class BookFrame extends JDialog
         authorsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // Инициализация списка авторов.
-        String[] data = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-        JList<String> authorsList = new JList<>(data);
+        JList<String> authorsList = new JList<>(authorsListModel);
         JScrollPane authorsScrollPane = new JScrollPane();
         authorsScrollPane.setViewportView(authorsList);
 
@@ -83,6 +95,8 @@ public class BookFrame extends JDialog
 
         // Инициализация кнопок действий авторов.
         JButton addAuthorButton = new JButton("Добавить");
+        addAuthorButton.setActionCommand("Add author");
+        addAuthorButton.addActionListener(buttonClickListener);
         JButton deleteAuthorButton = new JButton("Удалить");
 
         // Добавдение кнопок действий авторов на панель кнопок авторов.
@@ -187,7 +201,7 @@ public class BookFrame extends JDialog
         readPanel.setPreferredSize(new Dimension(110, 40));
         readPanel.setLayout(new BoxLayout(readPanel, BoxLayout.Y_AXIS));
 
-        // Инициализация элементов панель чтения.
+        // Инициализация элементов панели чтения.
         JLabel readLabel = new JLabel("Чтение");
         readLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         String[] readStates = {"Не прочитано", "Чтение", "Прочитано"};
@@ -224,7 +238,11 @@ public class BookFrame extends JDialog
 
         // Инициализация элементов панели дейсвий.
         JButton okButton = new JButton("OK");
+        okButton.setActionCommand("Add book");
+        okButton.addActionListener(buttonClickListener);
         JButton cancelButton = new JButton("Отмена");
+        cancelButton.setActionCommand("Cancel");
+        cancelButton.addActionListener(buttonClickListener);
 
         // Добавление элементов не панель дейстаий.
         actionPanel.add(okButton);
@@ -237,5 +255,39 @@ public class BookFrame extends JDialog
 
         // Возврат панели.
         return myAdditionalDataPanel;
+    }
+
+    // Обработчик событий нажантия кнопок.
+    private class ButtonClickListener implements ActionListener
+    {
+        // Обработка события.
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            // Получение команды.
+            String command = e.getActionCommand();
+
+            // Выбор кнопки.
+            switch (command)
+            {
+                // Добавление автора.
+                case "Add author":
+                    // Открытие окна.
+                    AuthorsFrame authorsFrame = new AuthorsFrame(BookFrame.this, "Add author", true);
+                    String author = authorsFrame.showDialog();
+
+                    // Проверка значения.
+                    if (!author.isEmpty())
+                    {
+                        // Добавление автора.
+                        ListModelTools.addStringInListModel(authorsListModel, author, true);
+                    }
+                    break;
+                // Закрытие окна.
+                case "Cancel":
+                    BookFrame.this.dispose();
+                    break;
+            }
+        }
     }
 }
