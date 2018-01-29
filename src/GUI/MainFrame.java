@@ -20,10 +20,10 @@ public class MainFrame extends JFrame
 
 
     // Конструктор.
-    public MainFrame(String windowName)
+    public MainFrame()
     {
         // Настройка окна.
-        super(windowName);
+        super("Books DB");
         setBounds(500, 500, 800, 400);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -48,7 +48,6 @@ public class MainFrame extends JFrame
 
         // Инициализация панели кнопок.
         JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setBackground(Color.LIGHT_GRAY);
         buttonsPanel.setPreferredSize(new Dimension(100, 400));
         buttonsPanel.setLayout(new GridLayout(0, 1));
 
@@ -99,7 +98,6 @@ public class MainFrame extends JFrame
         }
     }
 
-
     // Обработчик событий нажантия кнопок.
     private class ButtonClickListener implements ActionListener
     {
@@ -116,6 +114,8 @@ public class MainFrame extends JFrame
                 case "Filter":
                     break;
                 case "Add":
+                    BookFrame bookFrame = new BookFrame(MainFrame.this, "Add book", true);
+                    bookFrame.setVisible(true);
                     break;
                 case "Search":
                     break;
