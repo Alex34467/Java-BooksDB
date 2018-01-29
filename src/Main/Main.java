@@ -1,5 +1,6 @@
 package Main;
 
+import DB.DBService;
 import GUI.MainFrame;
 
 
@@ -9,8 +10,10 @@ public class Main
     // Точка входа в приложение.
     public static void main(String[] args)
     {
+        // Подключение к БД.
+        DBService.getInstance();
+
         // Запуск окна.
-        MainFrame frame = new MainFrame("Books DB");
-        frame.setVisible(true);
+        new MainFrame().setVisible(true);
     }
 }
