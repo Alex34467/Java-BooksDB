@@ -10,19 +10,30 @@ import java.awt.event.ActionListener;
 // Окно добавления / редактирования книги.
 public class BookFrame extends JDialog
 {
-    // Данные.
+    // Данные книги.
     private String[] bookAuthors;
-    private DefaultListModel<String> authorsListModel = new DefaultListModel<>();
+    private String[] booksTags;
+
+    // Модели списков.
+    private DefaultListModel<String> authorsListModel;
+    private DefaultListModel<String> tagsListModel;
+
+    // Обработчик кнпок.
     private ButtonClickListener buttonClickListener;
 
 
     // Конструктор.
     public BookFrame(JFrame owner, String title, boolean modal)
     {
+        // Иниуиализация окна.
         super(owner, title, modal);
         setBounds(500, 500, 400, 315);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+        // Инициализация списков.
+        authorsListModel = new DefaultListModel<>();
+        tagsListModel = new DefaultListModel<>();
 
         // Инициализация обработчика нажатий кнопок.
         buttonClickListener = new ButtonClickListener();
@@ -126,8 +137,7 @@ public class BookFrame extends JDialog
         tagsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // Инициализация списка меток.
-        String[] data = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-        JList<String> tagsList = new JList<>(data);
+        JList<String> tagsList = new JList<>(tagsListModel);
         JScrollPane tagsScrollPane = new JScrollPane();
         tagsScrollPane.setViewportView(tagsList);
 
@@ -138,6 +148,8 @@ public class BookFrame extends JDialog
 
         // Инициализация кнопок действий меток.
         JButton addTagButton = new JButton("Добавить");
+        addTagButton.setActionCommand("Add tag");
+        addTagButton.addActionListener(buttonClickListener);
         JButton deleteTagButton = new JButton("Удалить");
 
         // Добавдение кнопок действий меток на панель кнопок меток.
@@ -273,7 +285,9 @@ public class BookFrame extends JDialog
                 // Добавление автора.
                 case "Add author":
                     // Открытие окна.
-                    AuthorsFrame authorsFrame = new AuthorsFrame(BookFrame.this, "Add author", true);
+                    InputTextFrame authorsFrame = new InputTextFrame(BookFrame.this, "Add author", null, true);
+
+                    // Получение результата.
                     String author = authorsFrame.showDialog();
 
                     // Проверка значения.
@@ -283,6 +297,23 @@ public class BookFrame extends JDialog
                         ListModelTools.addStringInListModel(authorsListModel, author, true);
                     }
                     break;
+
+                // Добавление метки.
+                case "Add tag":
+                    // Открытие окна.
+                    InputTextFrame tagsFrame = new InputTextFrame(BookFrame.this, "Add tag", null, true);
+
+                    // Получение результата.
+                    String tag = tagsFrame.showDialog();
+
+                    // Проверка значения.
+                    if (!tag.isEmpty())
+                    {
+                        // Добавление автора.
+                        ListModelTools.addStringInListModel(tagsListModel, tag, true);
+                    }
+                    break;
+
                 // Закрытие окна.
                 case "Cancel":
                     BookFrame.this.dispose();
