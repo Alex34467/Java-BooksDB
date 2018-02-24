@@ -2,6 +2,8 @@ package GUI;
 
 import Tools.ListModelTools;
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,12 +16,22 @@ public class BookFrame extends JDialog
     private String[] bookAuthors;
     private String[] booksTags;
 
+    // Списки.
+    private JList<String> authorsList;
+    private JList<String> tagsList;
+
+    // Кнопки удаления.
+    private JButton deleteAuthorButton;
+    private JButton deleteTagButton;
+
     // Модели списков.
     private DefaultListModel<String> authorsListModel;
     private DefaultListModel<String> tagsListModel;
 
-    // Обработчик кнпок.
+    // Обработчики событий.
     private ButtonClickListener buttonClickListener;
+    private MyListSelectionListener authorsListSelectionListener;
+    private MyListSelectionListener tagsListSelectionListener;
 
 
     // Конструктор.
@@ -35,8 +47,10 @@ public class BookFrame extends JDialog
         authorsListModel = new DefaultListModel<>();
         tagsListModel = new DefaultListModel<>();
 
-        // Инициализация обработчика нажатий кнопок.
+        // Инициализация обработчиков.
         buttonClickListener = new ButtonClickListener();
+        authorsListSelectionListener = new MyListSelectionListener("Authors");
+        tagsListSelectionListener = new MyListSelectionListener("Tags");
 
         // Создание интерфейса.
         makeGUI();
@@ -95,7 +109,9 @@ public class BookFrame extends JDialog
         authorsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // Инициализация списка авторов.
-        JList<String> authorsList = new JList<>(authorsListModel);
+        authorsList = new JList<>(authorsListModel);
+        authorsList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
+        authorsList.getSelectionModel().addListSelectionListener(authorsListSelectionListener);
         JScrollPane authorsScrollPane = new JScrollPane();
         authorsScrollPane.setViewportView(authorsList);
 
@@ -108,7 +124,10 @@ public class BookFrame extends JDialog
         JButton addAuthorButton = new JButton("Добавить");
         addAuthorButton.setActionCommand("Add author");
         addAuthorButton.addActionListener(buttonClickListener);
-        JButton deleteAuthorButton = new JButton("Удалить");
+        deleteAuthorButton = new JButton("Удалить");
+        deleteAuthorButton.setActionCommand("Delete author");
+        deleteAuthorButton.addActionListener(buttonClickListener);
+        deleteAuthorButton.setEnabled(false);
 
         // Добавдение кнопок действий авторов на панель кнопок авторов.
         authorsButtonsPanel.add(addAuthorButton);
@@ -137,7 +156,9 @@ public class BookFrame extends JDialog
         tagsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // Инициализация списка меток.
-        JList<String> tagsList = new JList<>(tagsListModel);
+        tagsList = new JList<>(tagsListModel);
+        tagsList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
+        tagsList.getSelectionModel().addListSelectionListener(tagsListSelectionListener);
         JScrollPane tagsScrollPane = new JScrollPane();
         tagsScrollPane.setViewportView(tagsList);
 
@@ -150,7 +171,10 @@ public class BookFrame extends JDialog
         JButton addTagButton = new JButton("Добавить");
         addTagButton.setActionCommand("Add tag");
         addTagButton.addActionListener(buttonClickListener);
-        JButton deleteTagButton = new JButton("Удалить");
+        deleteTagButton = new JButton("Удалить");
+        deleteTagButton.setActionCommand("Delete tag");
+        deleteTagButton.addActionListener(buttonClickListener);
+        deleteTagButton.setEnabled(false);
 
         // Добавдение кнопок действий меток на панель кнопок меток.
         tagsButtonsPanel.add(addTagButton);
@@ -269,6 +293,7 @@ public class BookFrame extends JDialog
         return myAdditionalDataPanel;
     }
 
+
     // Обработчик событий нажантия кнопок.
     private class ButtonClickListener implements ActionListener
     {
@@ -298,6 +323,15 @@ public class BookFrame extends JDialog
                     }
                     break;
 
+                // Удаление автора из списка.
+                case "Delete author":
+                    // Получение значения.
+                    String selectedAuthor = authorsList.getSelectedValue();
+
+                    // Удаление.
+                    authorsListModel.removeElement(selectedAuthor);
+                    break;
+
                 // Добавление метки.
                 case "Add tag":
                     // Открытие окна.
@@ -314,10 +348,68 @@ public class BookFrame extends JDialog
                     }
                     break;
 
+                // Удаление метки из списка.
+                case "Delete tag":
+                    // Получение значения.
+                    String selectedTag = tagsList.getSelectedValue();
+
+                    // Удаление.
+                    tagsListModel.removeElement(selectedTag);
+                    break;
+
                 // Закрытие окна.
                 case "Cancel":
                     BookFrame.this.dispose();
                     break;
+            }
+        }
+    }
+
+    // Обработчик событий списков.
+    private class MyListSelectionListener implements ListSelectionListener
+    {
+        // Данные.
+        private String label;
+
+
+        // Конструктор.
+        public MyListSelectionListener(String label)
+        {
+            this.label = label;
+        }
+
+
+        // Изменние значения.
+        @Override
+        public void valueChanged(ListSelectionEvent e)
+        {
+            // Получение модели.
+            ListSelectionModel listSelectionModel = (ListSelectionModel)e.getSource();
+
+            // Выбор списка.
+            if (label.equals("Authors"))
+            {
+                // Получение значения.
+                if (listSelectionModel.isSelectionEmpty())
+                {
+                    deleteAuthorButton.setEnabled(false);
+                }
+                else
+                {
+                    deleteAuthorButton.setEnabled(true);
+                }
+            }
+            else
+            {
+                // Получение значения.
+                if (listSelectionModel.isSelectionEmpty())
+                {
+                    deleteTagButton.setEnabled(false);
+                }
+                else
+                {
+                    deleteTagButton.setEnabled(true);
+                }
             }
         }
     }
