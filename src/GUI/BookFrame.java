@@ -311,6 +311,7 @@ public class BookFrame extends JDialog
                 case "Add author":
                     // Открытие окна.
                     InputTextFrame authorsFrame = new InputTextFrame(BookFrame.this, "Add author", null, true);
+                    authorsFrame.setLocationRelativeTo(BookFrame.this);
 
                     // Получение результата.
                     String author = authorsFrame.showDialog();
@@ -336,6 +337,7 @@ public class BookFrame extends JDialog
                 case "Add tag":
                     // Открытие окна.
                     InputTextFrame tagsFrame = new InputTextFrame(BookFrame.this, "Add tag", null, true);
+                    tagsFrame.setLocationRelativeTo(BookFrame.this);
 
                     // Получение результата.
                     String tag = tagsFrame.showDialog();
