@@ -24,7 +24,8 @@ public class MainFrame extends JFrame
     {
         // Настройка окна.
         super("Books DB");
-        setBounds(500, 500, 800, 400);
+        setBounds(800, 400, 800, 400);
+        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -115,6 +116,7 @@ public class MainFrame extends JFrame
                     break;
                 case "Add":
                     BookFrame bookFrame = new BookFrame(MainFrame.this, "Add book", true);
+                    bookFrame.setLocationRelativeTo(MainFrame.this);
                     bookFrame.setVisible(true);
                     break;
                 case "Search":
