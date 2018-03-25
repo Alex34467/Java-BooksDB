@@ -27,7 +27,7 @@ public class ListModelTools
     // Добавление строки в модель.
     public static void addStringInListModel(DefaultListModel<String> model, String value, boolean sort)
     {
-        // Добавление без сортировки.
+        // Добавление с сортировкой.
         if (sort)
         {
             // Преобразование в список.
