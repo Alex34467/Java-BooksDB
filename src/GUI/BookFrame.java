@@ -1,6 +1,7 @@
 package GUI;
 
 import Tools.ListModelTools;
+import Tools.ValidationTools;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -15,6 +16,11 @@ public class BookFrame extends JDialog
     // Данные книги.
     private String[] bookAuthors;
     private String[] booksTags;
+
+    // Поля книги.
+    JTextField bookNameTextField;
+    JTextField yearTextField;
+    JTextField langTextField;
 
     // Списки.
     private JList<String> authorsList;
@@ -86,7 +92,7 @@ public class BookFrame extends JDialog
         // Инициализация элементов панели.
         JLabel bookNameLabel = new JLabel("Название книги");
         bookNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JTextField bookNameTextField = new JTextField(20);
+        bookNameTextField = new JTextField(20);
 
         // Добавление элементов.
         myBookNamePanel.add(bookNameLabel);
@@ -212,7 +218,7 @@ public class BookFrame extends JDialog
         // Инициализация элементов панели года.
         JLabel yearLabel = new JLabel("Год");
         yearLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JTextField yearTextField = new JTextField(10);
+        yearTextField = new JTextField(10);
 
         // Добавление элементов панели года.
         yearPanel.add(yearLabel);
@@ -226,7 +232,7 @@ public class BookFrame extends JDialog
         // Инициализация элементов панели языка.
         JLabel langLabel = new JLabel("Язык");
         langLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JTextField langTextField = new JTextField(10);
+        langTextField = new JTextField(10);
 
         // Добавление элементов панели языка.
         langPanel.add(langLabel);
@@ -293,6 +299,62 @@ public class BookFrame extends JDialog
         return myAdditionalDataPanel;
     }
 
+    // Проверка введенных данных о книге.
+    private boolean validateBook()
+    {
+        // Данные.
+        boolean result = true;
+        Color errorColor = new Color(255,102,102);
+
+        // Сброс цвета.
+        bookNameTextField.setBackground(Color.WHITE);
+        authorsList.setBackground(Color.WHITE);
+        tagsList.setBackground(Color.WHITE);
+        yearTextField.setBackground(Color.WHITE);
+        langTextField.setBackground(Color.WHITE);
+
+        // Проверка названия.
+        if (bookNameTextField.getText().isEmpty())
+        {
+            bookNameTextField.setBackground(errorColor);
+            result = false;
+        }
+
+        // Проверка авторов.
+        if (authorsListModel.isEmpty())
+        {
+            authorsList.setBackground(errorColor);
+            result = false;
+        }
+
+        // Проверка меток.
+        if (tagsListModel.isEmpty())
+        {
+            tagsList.setBackground(errorColor);
+            result = false;
+        }
+
+        // Проверка года.
+        if (!yearTextField.getText().isEmpty())
+        {
+            if (!ValidationTools.validateYear(yearTextField.getText()))
+            {
+                yearTextField.setBackground(errorColor);
+                result = false;
+            }
+        }
+
+        // Проверка языка.
+        if (langTextField.getText().isEmpty() || !langTextField.getText().matches("[a-zA-Z]+"))
+        {
+            langTextField.setBackground(errorColor);
+            result = false;
+        }
+
+        // Возврат результата.
+        return result;
+    }
+
 
     // Обработчик событий нажантия кнопок.
     private class ButtonClickListener implements ActionListener
@@ -357,6 +419,21 @@ public class BookFrame extends JDialog
 
                     // Удаление.
                     tagsListModel.removeElement(selectedTag);
+                    break;
+
+                // Добавление книги.
+                // TODO : Реализовать.
+                case "Add book":
+
+                    // Проверка данных.
+                    if (validateBook())
+                    {
+                        // Сборка объекта.
+
+                        // Закрытие окна.
+                        BookFrame.this.dispose();
+
+                    }
                     break;
 
                 // Закрытие окна.
