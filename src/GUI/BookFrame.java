@@ -1,5 +1,6 @@
 package GUI;
 
+import Entities.Book;
 import Tools.ListModelTools;
 import Tools.ValidationTools;
 import javax.swing.*;
@@ -300,7 +301,7 @@ public class BookFrame extends JDialog
     }
 
     // Проверка введенных данных о книге.
-    private boolean validateBook()
+    private boolean validateBookForm()
     {
         // Данные.
         boolean result = true;
@@ -353,6 +354,21 @@ public class BookFrame extends JDialog
 
         // Возврат результата.
         return result;
+    }
+
+    // Сборка книги.
+    // FIXME: Реализовать.
+    private Book buildBook()
+    {
+        // Данные.
+        Book book = null;
+
+
+        // Сборка.
+
+
+        // Возврат.
+        return book;
     }
 
 
@@ -422,17 +438,19 @@ public class BookFrame extends JDialog
                     break;
 
                 // Добавление книги.
-                // TODO : Реализовать.
+                // FIXME: Реализовать.
                 case "Add book":
-
                     // Проверка данных.
-                    if (validateBook())
+                    if (validateBookForm())
                     {
                         // Сборка объекта.
 
+
+                        // Добавление объекта в БД.
+
+
                         // Закрытие окна.
                         BookFrame.this.dispose();
-
                     }
                     break;
 
@@ -456,7 +474,6 @@ public class BookFrame extends JDialog
         {
             this.label = label;
         }
-
 
         // Изменние значения.
         @Override
