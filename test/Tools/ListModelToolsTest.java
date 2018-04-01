@@ -134,4 +134,50 @@ class ListModelToolsTest
         // Проверка.
         assertTrue(result);
     }
+
+    // Проверка получения массива строк их пустой ListModel.
+    @Test
+    void testGetElementsFromEmptyListModel()
+    {
+        // Подготовка.
+        DefaultListModel<String> model = new DefaultListModel<>();
+
+        // Выполнение.
+        String[] data = ListModelTools.getElementsFromListModel(model);
+        int size = data.length;
+
+        // Проверка.
+        assertEquals(0, size);
+    }
+
+    // Проверка количества элементов при плучении массива строк из ListModel.
+    @Test
+    void testGetElementsFromListModelForElementsCount()
+    {
+        // Подготовка.
+        String[] inputData = {"AAA", "BAA", "AAD", "AAC", "CCA", "ABA"};
+        DefaultListModel<String> model = ListModelTools.createListModelFromStringArray(inputData);
+
+        // Выполнение.
+        String[] outputData = ListModelTools.getElementsFromListModel(model);
+        int result = outputData.length;
+
+        // Проверка.
+        assertEquals(6, result);
+    }
+
+    // Проверка плучения массива строк из ListModel на соответствие элементов.
+    @Test
+    void testGetElementsFromListModelForMatchingOfElements()
+    {
+        // Подготовка.
+        String[] inputData = {"AAA", "BAA", "AAD", "AAC", "CCA", "ABA"};
+        DefaultListModel<String> model = ListModelTools.createListModelFromStringArray(inputData);
+
+        // Выполнение.
+        String[] outputData = ListModelTools.getElementsFromListModel(model);
+
+        // Проверка.
+        assertArrayEquals(inputData, outputData);
+    }
 }
