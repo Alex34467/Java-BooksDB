@@ -9,29 +9,46 @@ class ValidationToolsTest
 {
     // Проверка правильной строки года.
     @Test
-    void validateValidYear()
+    void testValidateYearWithValidData()
     {
-        assertTrue(ValidationTools.validateYear("2000"));
+        boolean result = ValidationTools.validateYear("2000");
+
+        assertTrue(result);
+    }
+
+    // Проверка строки с отрицательным годом.
+    @Test
+    void testValidateYearWithNegativeYear()
+    {
+        boolean result = ValidationTools.validateYear("-1950");
+
+        assertFalse(result);
     }
 
     // Проверка строки меньшего года.
     @Test
-    void validateLessYear()
+    void testValidateYearWithLessYear()
     {
-        assertFalse(ValidationTools.validateYear("1460"));
+        boolean result = ValidationTools.validateYear("1460");
+
+        assertFalse(result);
     }
 
     // Проверка строки будущего года.
     @Test
-    void validateFutureYear()
+    void testValidateYearWithFutureYear()
     {
-        assertFalse(ValidationTools.validateYear("2025"));
+        boolean result = ValidationTools.validateYear("2050");
+
+        assertFalse(result);
     }
 
-    // Проверка строки года с символами.
+    // Проверка неправильной строки года.
     @Test
-    void validateInvalidYear()
+    void testValidateYearWithInvalidData()
     {
-        assertFalse(ValidationTools.validateYear("2000abc"));
+        boolean result = ValidationTools.validateYear("2000&abc");
+
+        assertFalse(result);
     }
 }
