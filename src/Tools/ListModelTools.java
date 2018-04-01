@@ -104,4 +104,21 @@ public class ListModelTools
             model.addElement(str);
         }
     }
+
+    // Возврат массива элементов модели.
+    public static String[] getElementsFromListModel(DefaultListModel<String> model)
+    {
+        // Данные.
+        int size = model.getSize();
+        String[] data = new String[size];
+
+        // Обход.
+        for(int i = 0; i < size; i++)
+        {
+            data[i] = model.get(i);
+        }
+
+        // Возврат результата.
+        return data;
+    }
 }
