@@ -8,7 +8,7 @@ public class ValidationTools
     // Проверка года.
     public static boolean validateYear(String yearStr)
     {
-        // Проверка наличия стороки.
+        // Проверка наличия строки.
         if (yearStr.isEmpty()) return false;
 
         try
