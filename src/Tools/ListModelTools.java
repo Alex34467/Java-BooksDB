@@ -9,7 +9,7 @@ import java.util.List;
 public class ListModelTools
 {
     // Создание модели из массива.
-    public static DefaultListModel<String> createJListModelFromStringArray(String[] data)
+    public static DefaultListModel<String> createListModelFromStringArray(String[] data)
     {
         // Создание модели.
         DefaultListModel<String> model = new DefaultListModel<>();
@@ -55,13 +55,13 @@ public class ListModelTools
     }
 
     // Фильтрация модели.
-    public static void filterByText(DefaultListModel<String> model, String text, String[] defaultValues, boolean sort)
+    public static void filterListModelByText(DefaultListModel<String> model, String text, String[] allElements, boolean sort)
     {
         // Проверка.
-        if (defaultValues == null) return;
+        if (allElements == null) return;
 
         // Фильтрация.
-        for (String value : defaultValues)
+        for (String value : allElements)
         {
             if (!value.contains(text))
             {
