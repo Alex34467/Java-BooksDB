@@ -15,6 +15,8 @@ public class InputTextFrame extends JDialog
     // Данные.
     private String[] data;
     private DefaultListModel<String> textListModel = new DefaultListModel<>();
+
+    // Обработчики событий.
     private ButtonClickListener buttonClickListener;
     private MyDocumentListener documentListener;
 
@@ -120,14 +122,14 @@ public class InputTextFrame extends JDialog
         @Override
         public void insertUpdate(DocumentEvent e)
         {
-            ListModelTools.filterByText(textListModel, textField.getText(), data, true);
+            ListModelTools.filterListModelByText(textListModel, textField.getText(), data, true);
         }
 
         // Удаление текста.
         @Override
         public void removeUpdate(DocumentEvent e)
         {
-            ListModelTools.filterByText(textListModel, textField.getText(), data, true);
+            ListModelTools.filterListModelByText(textListModel, textField.getText(), data, true);
         }
 
         // Изменение текста.
