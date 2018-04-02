@@ -1,9 +1,7 @@
 package GUI;
 
 import DB.DBService;
-import Entities.Author;
-import Entities.Book;
-import Entities.Tag;
+import Tools.DBEntitiesTools;
 import Tools.ListModelTools;
 import Tools.ValidationTools;
 import javax.swing.*;
@@ -21,6 +19,7 @@ public class BookFrame extends JDialog
     private JTextField bookNameTextField;
     private JTextField yearTextField;
     private JTextField langTextField;
+    private JTextField fileTextField;
 
     // Списки.
     private JList<String> authorsList;
@@ -262,7 +261,7 @@ public class BookFrame extends JDialog
         // Инициализация элементов панели расширения файла.
         JLabel fileLabel = new JLabel("Тип файла");
         fileLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JTextField fileTextField = new JTextField(10);
+        fileTextField = new JTextField(10);
 
         // Добавление элементов панели расширения файла.
         filePanel.add(fileLabel);
@@ -361,48 +360,16 @@ public class BookFrame extends JDialog
     private boolean proceedBookFrameData()
     {
         // Обработка книги.
-        if(proceedBook())
+        boolean result = DBEntitiesTools.addBook(bookNameTextField.getText(), yearTextField.getText(), readComboBox.getSelectedIndex(), langTextField.getText(), fileTextField.getText());
+        if(result)
         {
             // Обработка авторов.
-            //proceedAuthors();
+            String[] authorsNames = ListModelTools.getElementsFromListModel(authorsListModel);
+            DBEntitiesTools.addAuthors(authorsNames);
 
             // Обработка меток.
-            //proceedTags();
-
-            // Завершение.
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    // Обработка книги.
-    // FIXME: Реализовать.
-    private boolean proceedBook()
-    {
-        // Получение основных данных.
-        String bookName = bookNameTextField.getText();
-        int year = 0;
-        if (!yearTextField.getText().isEmpty())
-        {
-            year = Integer.parseInt(yearTextField.getText());
-        }
-
-        // Поиск книги.
-        Book book = DBService.getInstance().getBookByNameAndYear(bookName, year);
-
-        // Проверка на наличие.
-        if (book == null)
-        {
-            // Получение дополнительных данных.
-            int readStateId = readComboBox.getSelectedIndex();
-            int languageId = 0;
-            int extensionId = 0;
-
-            // Сборка объекта.
-
+            String[] tagsNames = ListModelTools.getElementsFromListModel(tagsListModel);
+            DBEntitiesTools.addTags(tagsNames);
 
             // Завершение.
             return true;
@@ -414,54 +381,6 @@ public class BookFrame extends JDialog
             bookNameTextField.setBackground(existColor);
             yearTextField.setBackground(existColor);
             return false;
-        }
-    }
-
-    // Обработка авторов.
-    private void proceedAuthors()
-    {
-        // Получение авторов.
-        String[] authors = ListModelTools.getElementsFromListModel(authorsListModel);
-
-        // Обход авторов.
-        for (String authorName : authors)
-        {
-            // Поиск автора.
-            Author author = DBService.getInstance().getAuthorByName(authorName);
-
-            // Проверка на отсутствие результата.
-            if (author == null)
-            {
-                // Сборка объекта.
-                author = new Author(authorName);
-
-                // Добавление автора.
-                DBService.getInstance().addAuthor(author);
-            }
-        }
-    }
-
-    // Обработка меток.
-    private void proceedTags()
-    {
-        // Получение меток.
-        String[] tags = ListModelTools.getElementsFromListModel(tagsListModel);
-
-        // Обход меток.
-        for (String tagName : tags)
-        {
-            // Поиск метки.
-            Tag tag = DBService.getInstance().getTagByName(tagName);
-
-            // Проверка на отсутствие результата.
-            if (tag == null)
-            {
-                // Сборка объекта.
-                tag = new Tag(tagName);
-
-                // Добавление метки.
-                DBService.getInstance().addTag(tag);
-            }
         }
     }
 
