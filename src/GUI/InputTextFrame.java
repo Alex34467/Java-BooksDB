@@ -4,21 +4,29 @@ import Tools.ListModelTools;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
+import java.util.List;
 
 
 // Окно для ввода текста.
 public class InputTextFrame extends JDialog
 {
     // Данные.
-    private String[] data;
-    private DefaultListModel<String> textListModel = new DefaultListModel<>();
+    private boolean okExit = false;
+    private String result;
+    private String[] values;
+    private List<String> restrictedValues;
+    private DefaultListModel<String> textListModel;
 
     // Обработчики событий.
     private ButtonClickListener buttonClickListener;
     private MyDocumentListener documentListener;
+    private MyListSelectionListener listSelectionListener;
 
     // Элементы.
     private JTextField textField;
@@ -26,7 +34,7 @@ public class InputTextFrame extends JDialog
 
 
     // Конструктор.
-    public InputTextFrame(JDialog owner, String title, String[] values, boolean modal)
+    public InputTextFrame(JDialog owner, String title, String[] values, String[] restrictedValues,  boolean modal)
     {
         // Инициализация окна.
         super(owner, title, modal);
@@ -34,12 +42,18 @@ public class InputTextFrame extends JDialog
         setLayout(new BorderLayout());
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        // Инициализация списка значений.
-        data = values;
+        // Инициализация массивов значений.
+        this.values = values;
+        this.restrictedValues = Arrays.asList(restrictedValues);
+
+        // Инициализация модели списка.
+        textListModel = ListModelTools.createListModelFromStringArray(values);
+        ListModelTools.sortListModel(textListModel);
 
         // Инициализация обработчиков.
         buttonClickListener = new ButtonClickListener();
         documentListener = new MyDocumentListener();
+        listSelectionListener = new MyListSelectionListener();
 
         // Создание интерфейса.
         makeGUI();
@@ -51,8 +65,11 @@ public class InputTextFrame extends JDialog
         // Показ окна.
         setVisible(true);
 
+        // Проверка на закрытие.
+        if (!okExit) return "";
+
         // Воврат введенного текста.
-        return textField.getText();
+        return result;
     }
 
     // Создание интерфейса.
@@ -67,6 +84,8 @@ public class InputTextFrame extends JDialog
 
         // Инициализация списка.
         textList = new JList<>(textListModel);
+        textList.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
+        textList.getSelectionModel().addListSelectionListener(listSelectionListener);
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(textList);
 
@@ -94,6 +113,7 @@ public class InputTextFrame extends JDialog
         container.add(buttonsPanel, BorderLayout.PAGE_END);
     }
 
+
     // Обработчик событий нажантия кнопок.
     private class ButtonClickListener implements ActionListener
     {
@@ -108,6 +128,18 @@ public class InputTextFrame extends JDialog
             switch (command)
             {
                 case "Add":
+                    // Проверка значения.
+                    if (restrictedValues.contains(result))
+                    {
+                        textField.setBackground(new Color(255,102,102));
+                    }
+                    else
+                    {
+                        // Завершение.
+                        okExit = true;
+                        InputTextFrame.this.dispose();
+                    }
+                    break;
                 case "Cancel":
                     InputTextFrame.this.dispose();
                     break;
@@ -115,21 +147,21 @@ public class InputTextFrame extends JDialog
         }
     }
 
-    // Обработчик текстового документа.
+    // Обработчик событий текстового документа.
     private class MyDocumentListener implements DocumentListener
     {
         // Добавление текста.
         @Override
         public void insertUpdate(DocumentEvent e)
         {
-            ListModelTools.filterListModelByText(textListModel, textField.getText(), data, true);
+            updateText();
         }
 
         // Удаление текста.
         @Override
         public void removeUpdate(DocumentEvent e)
         {
-            ListModelTools.filterListModelByText(textListModel, textField.getText(), data, true);
+            updateText();
         }
 
         // Изменение текста.
@@ -137,6 +169,32 @@ public class InputTextFrame extends JDialog
         public void changedUpdate(DocumentEvent e)
         {
 
+        }
+
+        // Изменение текста.
+        private void updateText()
+        {
+            textField.setBackground(Color.WHITE);
+            result = textField.getText();
+            ListModelTools.filterListModelByText(textListModel, textField.getText(), values, true);
+        }
+    }
+
+    // Обработчик событий списка.
+    private class MyListSelectionListener implements ListSelectionListener
+    {
+        // Выбор элемента.
+        @Override
+        public void valueChanged(ListSelectionEvent e)
+        {
+            // Получение модели выбора.
+            ListSelectionModel model = (ListSelectionModel)e.getSource();
+
+            if (!model.isSelectionEmpty())
+            {
+                // Получение элемента.
+                result = textList.getSelectedValue();
+            }
         }
     }
 }
