@@ -1,11 +1,10 @@
 package DB.Repository;
 
-
 import DB.DBExecutor;
 import Entities.Book;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 
 // Репозиторий книг.
 public class BooksRepository
@@ -39,6 +38,22 @@ public class BooksRepository
 
         // Получение и возврат результата.
         return getBookFromResultSet(resultSet);
+    }
+
+    // Добавление книги.
+    public void add(Book book)
+    {
+        // Подготовка данных.
+        String yearStr = (book.getYear() == 0)? "NULL" : String.valueOf(book.getYear());
+        String extStr = (book.getExtensionId() == 0)? "NULL" : String.valueOf(book.getExtensionId());
+
+        // Подготовка запроса.
+        String query = "INSERT INTO Books(Name, Year, Read_State_Id, Language_id, Extension_id) VALUES(\"";
+        query += book.getName() + "\", " + yearStr + ", " + book.getReadStateId() + ", " + book.getLanguageId();
+        query += ", " + extStr + ")";
+
+        // Выполнение запроса.
+        executor.executeUpdate(query);
     }
 
     // Получение книги из ResultSet.
