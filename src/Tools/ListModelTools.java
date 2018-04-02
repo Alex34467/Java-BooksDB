@@ -15,9 +15,12 @@ public class ListModelTools
         DefaultListModel<String> model = new DefaultListModel<>();
 
         // Заполнение модели.
-        for (String author : data)
+        if (data != null)
         {
-            model.addElement(author);
+            for (String author : data)
+            {
+                model.addElement(author);
+            }
         }
 
         // Возврат модели.
