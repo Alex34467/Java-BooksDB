@@ -1,16 +1,28 @@
 package DB;
 
+import DB.Repository.AuthorsRepository;
+import DB.Repository.BooksRepository;
+import DB.Repository.TagsRepository;
+import Entities.Author;
+import Entities.Book;
+import Entities.Tag;
 import java.io.File;
+import java.util.Collection;
 
 
 // Класс, управляющий БД.
 public class DBService
 {
-    // Данные.
+    // Данные БД.
     private static DBService instance;
     private DBExecutor executor;
     private String fileName = "Data/Books.db";
     private String URL = "jdbc:sqlite:" + fileName;
+
+    // Репозитории.
+    private AuthorsRepository authorsRepository;
+    private TagsRepository tagsRepository;
+    private BooksRepository booksRepository;
 
 
     // Геттер.
@@ -18,6 +30,60 @@ public class DBService
     {
         if (instance == null) instance = new DBService();
         return instance;
+    }
+
+    // Получение всех авторов.
+    public Collection<Author> getAllAuthors()
+    {
+        return authorsRepository.getAll();
+    }
+
+    // Получение всех меток.
+    public Collection<Tag> getAllTags()
+    {
+        return tagsRepository.getAll();
+    }
+
+    // Получение автора по имени.
+    public Author getAuthorByName(String name)
+    {
+        return authorsRepository.getByName(name);
+    }
+
+    // Получение метки по названию.
+    public Tag getTagByName(String name)
+    {
+        return tagsRepository.getByName(name);
+    }
+
+    // Получение книги по названию и году.
+    public Book getBookByNameAndYear(String name, int year)
+    {
+        return booksRepository.getByNameAndYear(name, year);
+    }
+
+    // Получение имен всех авторов.
+    public String[] getAllAuthorsNames()
+    {
+        return authorsRepository.getAllNames();
+    }
+
+    // Получение названий всех меток.
+    public String[] getAllTagsNames()
+    {
+        return tagsRepository.getAllNames();
+    }
+
+    // Добавление автора.
+    public void addAuthor(Author author)
+    {
+        authorsRepository.add(author);
+    }
+
+    // Добавление метки.
+    public void addTag(Tag tag)
+    {
+        tagsRepository.add(tag);
     }
 
     // Конструктор.
@@ -37,6 +103,11 @@ public class DBService
             executor.connect(URL);
             createDB();
         }
+
+        // Инициализация репозиториев.
+        authorsRepository = new AuthorsRepository(executor);
+        tagsRepository = new TagsRepository(executor);
+        booksRepository = new BooksRepository(executor);
     }
 
     // Созвдание БД.
