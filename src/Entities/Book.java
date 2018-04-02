@@ -24,6 +24,12 @@ public class Book
         this.extensionId = extensionId;
     }
 
+    // Конструктор.
+    public Book (String name, int year, int readStateId, int languageId, int extensionId)
+    {
+        this(-1, name, year, readStateId, languageId, extensionId);
+    }
+
     // Геттеры.
     public int getId()
     {
