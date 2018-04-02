@@ -47,6 +47,14 @@ public class SQLiteExecutor implements DBExecutor
     @Override
     public ResultSet executeQuery(String query)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return statement.executeQuery(query);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
