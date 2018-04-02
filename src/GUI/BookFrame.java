@@ -1,6 +1,9 @@
 package GUI;
 
+import DB.DBService;
+import Entities.Author;
 import Entities.Book;
+import Entities.Tag;
 import Tools.ListModelTools;
 import Tools.ValidationTools;
 import javax.swing.*;
@@ -14,18 +17,15 @@ import java.awt.event.ActionListener;
 // Окно добавления / редактирования книги.
 public class BookFrame extends JDialog
 {
-    // Данные книги.
-    private String[] bookAuthors;
-    private String[] booksTags;
-
     // Поля книги.
-    JTextField bookNameTextField;
-    JTextField yearTextField;
-    JTextField langTextField;
+    private JTextField bookNameTextField;
+    private JTextField yearTextField;
+    private JTextField langTextField;
 
     // Списки.
     private JList<String> authorsList;
     private JList<String> tagsList;
+    private JComboBox<String> readComboBox;
 
     // Кнопки удаления.
     private JButton deleteAuthorButton;
@@ -248,7 +248,7 @@ public class BookFrame extends JDialog
         JLabel readLabel = new JLabel("Чтение");
         readLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         String[] readStates = {"Не прочитано", "Чтение", "Прочитано"};
-        JComboBox readComboBox = new JComboBox(readStates);
+        readComboBox = new JComboBox(readStates);
 
         // Добавление элементов панели чтения.
         readPanel.add(readLabel);
@@ -346,7 +346,7 @@ public class BookFrame extends JDialog
         }
 
         // Проверка языка.
-        if (langTextField.getText().isEmpty() || !langTextField.getText().matches("[a-zA-Z]+"))
+        if (langTextField.getText().isEmpty() || !langTextField.getText().matches("[a-zA-Zа-яА-Я]+"))
         {
             langTextField.setBackground(errorColor);
             result = false;
@@ -356,19 +356,157 @@ public class BookFrame extends JDialog
         return result;
     }
 
-    // Сборка книги.
+    // Обработка данных о книге.
     // FIXME: Реализовать.
-    private Book buildBook()
+    private boolean proceedBookFrameData()
     {
-        // Данные.
-        Book book = null;
+        // Обработка книги.
+        if(proceedBook())
+        {
+            // Обработка авторов.
+            //proceedAuthors();
+
+            // Обработка меток.
+            //proceedTags();
+
+            // Завершение.
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    // Обработка книги.
+    // FIXME: Реализовать.
+    private boolean proceedBook()
+    {
+        // Получение основных данных.
+        String bookName = bookNameTextField.getText();
+        int year = 0;
+        if (!yearTextField.getText().isEmpty())
+        {
+            year = Integer.parseInt(yearTextField.getText());
+        }
+
+        // Поиск книги.
+        Book book = DBService.getInstance().getBookByNameAndYear(bookName, year);
+
+        // Проверка на наличие.
+        if (book == null)
+        {
+            // Получение дополнительных данных.
+            int readStateId = readComboBox.getSelectedIndex();
+            int languageId = 0;
+            int extensionId = 0;
+
+            // Сборка объекта.
 
 
-        // Сборка.
+            // Завершение.
+            return true;
+        }
+        else
+        {
+            // Книга уже существует.
+            Color existColor = new Color(255, 255, 153);
+            bookNameTextField.setBackground(existColor);
+            yearTextField.setBackground(existColor);
+            return false;
+        }
+    }
 
+    // Обработка авторов.
+    private void proceedAuthors()
+    {
+        // Получение авторов.
+        String[] authors = ListModelTools.getElementsFromListModel(authorsListModel);
 
-        // Возврат.
-        return book;
+        // Обход авторов.
+        for (String authorName : authors)
+        {
+            // Поиск автора.
+            Author author = DBService.getInstance().getAuthorByName(authorName);
+
+            // Проверка на отсутствие результата.
+            if (author == null)
+            {
+                // Сборка объекта.
+                author = new Author(authorName);
+
+                // Добавление автора.
+                DBService.getInstance().addAuthor(author);
+            }
+        }
+    }
+
+    // Обработка меток.
+    private void proceedTags()
+    {
+        // Получение меток.
+        String[] tags = ListModelTools.getElementsFromListModel(tagsListModel);
+
+        // Обход меток.
+        for (String tagName : tags)
+        {
+            // Поиск метки.
+            Tag tag = DBService.getInstance().getTagByName(tagName);
+
+            // Проверка на отсутствие результата.
+            if (tag == null)
+            {
+                // Сборка объекта.
+                tag = new Tag(tagName);
+
+                // Добавление метки.
+                DBService.getInstance().addTag(tag);
+            }
+        }
+    }
+
+    // Добавление автора в список.
+    private void addAuthor()
+    {
+        // Получение данных.
+        String[] authorsNames = DBService.getInstance().getAllAuthorsNames();
+        String[] restrictedAuthors = ListModelTools.getElementsFromListModel(authorsListModel);
+
+        // Открытие окна.
+        InputTextFrame authorsFrame = new InputTextFrame(BookFrame.this, "Add author", authorsNames, restrictedAuthors, true);
+        authorsFrame.setLocationRelativeTo(BookFrame.this);
+
+        // Получение результата.
+        String author = authorsFrame.showDialog();
+
+        // Проверка значения.
+        if (author != null && !author.isEmpty())
+        {
+            // Добавление автора.
+            ListModelTools.addStringInListModel(authorsListModel, author, true);
+        }
+    }
+
+    // Добавление тега в список.
+    private void addTag()
+    {
+        // Получение данных.
+        String[] tagsNames = DBService.getInstance().getAllTagsNames();
+        String[] restrictedTags = ListModelTools.getElementsFromListModel(tagsListModel);
+
+        // Открытие окна.
+        InputTextFrame tagsFrame = new InputTextFrame(BookFrame.this, "Add tag", tagsNames, restrictedTags, true);
+        tagsFrame.setLocationRelativeTo(BookFrame.this);
+
+        // Получение результата.
+        String tag = tagsFrame.showDialog();
+
+        // Проверка значения.
+        if (tag != null && !tag.isEmpty() )
+        {
+            // Добавление автора.
+            ListModelTools.addStringInListModel(tagsListModel, tag, true);
+        }
     }
 
 
@@ -387,19 +525,7 @@ public class BookFrame extends JDialog
             {
                 // Добавление автора.
                 case "Add author":
-                    // Открытие окна.
-                    InputTextFrame authorsFrame = new InputTextFrame(BookFrame.this, "Add author", null, true);
-                    authorsFrame.setLocationRelativeTo(BookFrame.this);
-
-                    // Получение результата.
-                    String author = authorsFrame.showDialog();
-
-                    // Проверка значения.
-                    if (!author.isEmpty())
-                    {
-                        // Добавление автора.
-                        ListModelTools.addStringInListModel(authorsListModel, author, true);
-                    }
+                    addAuthor();
                     break;
 
                 // Удаление автора из списка.
@@ -413,19 +539,7 @@ public class BookFrame extends JDialog
 
                 // Добавление метки.
                 case "Add tag":
-                    // Открытие окна.
-                    InputTextFrame tagsFrame = new InputTextFrame(BookFrame.this, "Add tag", null, true);
-                    tagsFrame.setLocationRelativeTo(BookFrame.this);
-
-                    // Получение результата.
-                    String tag = tagsFrame.showDialog();
-
-                    // Проверка значения.
-                    if (!tag.isEmpty())
-                    {
-                        // Добавление автора.
-                        ListModelTools.addStringInListModel(tagsListModel, tag, true);
-                    }
+                    addTag();
                     break;
 
                 // Удаление метки из списка.
@@ -443,14 +557,12 @@ public class BookFrame extends JDialog
                     // Проверка данных.
                     if (validateBookForm())
                     {
-                        // Сборка объекта.
-
-
-                        // Добавление объекта в БД.
-
-
-                        // Закрытие окна.
-                        BookFrame.this.dispose();
+                        // Обработка данных.
+                        if(proceedBookFrameData())
+                        {
+                            // Закрытие окна.
+                            BookFrame.this.dispose();
+                        }
                     }
                     break;
 
