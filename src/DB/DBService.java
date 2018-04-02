@@ -1,11 +1,8 @@
 package DB;
 
-import DB.Repository.AuthorsRepository;
-import DB.Repository.BooksRepository;
-import DB.Repository.TagsRepository;
-import Entities.Author;
-import Entities.Book;
-import Entities.Tag;
+import DB.Repository.*;
+import Entities.*;
+
 import java.io.File;
 import java.util.Collection;
 
@@ -23,6 +20,8 @@ public class DBService
     private AuthorsRepository authorsRepository;
     private TagsRepository tagsRepository;
     private BooksRepository booksRepository;
+    private LanguagesRepository languagesRepository;
+    private ExtensionsRepository extensionsRepository;
 
 
     // Геттер.
@@ -62,6 +61,18 @@ public class DBService
         return booksRepository.getByNameAndYear(name, year);
     }
 
+    // Получение языка на названию.
+    public Language getLanguageByName(String name)
+    {
+        return languagesRepository.getByName(name);
+    }
+
+    // Получение расширения по названию.
+    public Extension getExtensionByName(String name)
+    {
+        return extensionsRepository.getByName(name);
+    }
+
     // Получение имен всех авторов.
     public String[] getAllAuthorsNames()
     {
@@ -86,6 +97,24 @@ public class DBService
         tagsRepository.add(tag);
     }
 
+    // Добавление книги.
+    public void addBook(Book book)
+    {
+        booksRepository.add(book);
+    }
+
+    // Добавление языка.
+    public void addLanguage(Language language)
+    {
+        languagesRepository.add(language);
+    }
+
+    // Добавление расширения.
+    public void addExtension(Extension extension)
+    {
+        extensionsRepository.add(extension);
+    }
+
     // Конструктор.
     private DBService()
     {
@@ -108,6 +137,8 @@ public class DBService
         authorsRepository = new AuthorsRepository(executor);
         tagsRepository = new TagsRepository(executor);
         booksRepository = new BooksRepository(executor);
+        languagesRepository = new LanguagesRepository(executor);
+        extensionsRepository = new ExtensionsRepository(executor);
     }
 
     // Созвдание БД.
