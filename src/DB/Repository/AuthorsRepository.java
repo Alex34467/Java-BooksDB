@@ -76,6 +76,35 @@ public class AuthorsRepository
         return set.toArray(new String[set.size()]);
     }
 
+    // Получение id авторов по именам.
+    public int[] getIdsByNames(String[] names)
+    {
+        // Подготовка запроса.
+        StringBuilder builder = new StringBuilder("SELECT id FROM Authors WHERE Name IN (");
+
+        for (int i = 0; i < names.length; i++)
+        {
+            builder.append("\"").append(names[i]).append("\"");
+
+            if (i != names.length - 1)
+            {
+                builder.append(", ");
+            }
+            else
+            {
+                builder.append(")");
+            }
+        }
+
+        String query = builder.toString();
+
+        // Выполнение запроса.
+        ResultSet resultSet = executor.executeQuery(query);
+
+        // Получение и аозврат результата.
+        return getIdsFromResultSet(resultSet, names.length);
+    }
+
     // Добавление автора.
     public void add(Author author)
     {
@@ -132,5 +161,30 @@ public class AuthorsRepository
 
         // Возврат результата.
         return authors;
+    }
+
+    // Получение массива id из ResultSet.
+    private int[] getIdsFromResultSet(ResultSet resultSet, int length)
+    {
+        // Данные.
+        int[] result = new int[length];
+
+        // Заполнение.
+        try
+        {
+            int i = 0;
+            while (resultSet.next())
+            {
+                result[i] = resultSet.getInt(1);
+                i++;
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        // Возврат результата.
+        return result;
     }
 }
