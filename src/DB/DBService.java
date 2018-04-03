@@ -22,6 +22,8 @@ public class DBService
     private BooksRepository booksRepository;
     private LanguagesRepository languagesRepository;
     private ExtensionsRepository extensionsRepository;
+    private BookAndAuthorsRepository bookAndAuthorsRepository;
+    private BooksAndTagsRepository booksAndTagsRepository;
 
 
     // Геттер.
@@ -49,10 +51,22 @@ public class DBService
         return authorsRepository.getByName(name);
     }
 
+    // Получение id авторов по именам.
+    public int[] getAuthorsIdsByNames(String[] names)
+    {
+        return authorsRepository.getIdsByNames(names);
+    }
+
     // Получение метки по названию.
     public Tag getTagByName(String name)
     {
         return tagsRepository.getByName(name);
+    }
+
+    // Получение id меток по названию.
+    public int[] getTagsIdsByNames(String[] names)
+    {
+        return tagsRepository.getIdsByNames(names);
     }
 
     // Получение книги по названию и году.
@@ -115,6 +129,18 @@ public class DBService
         extensionsRepository.add(extension);
     }
 
+    // Добавление записи об книге и авторе.
+    public void addBookAndAuthor(BooksAndAuthorsEntity entity)
+    {
+        bookAndAuthorsRepository.add(entity);
+    }
+
+    // Добавление записи об книге и метке.
+    public void addBookAndTag(BooksAndTagsEntity entity)
+    {
+        booksAndTagsRepository.add(entity);
+    }
+
     // Конструктор.
     private DBService()
     {
@@ -139,9 +165,12 @@ public class DBService
         booksRepository = new BooksRepository(executor);
         languagesRepository = new LanguagesRepository(executor);
         extensionsRepository = new ExtensionsRepository(executor);
+        bookAndAuthorsRepository = new BookAndAuthorsRepository(executor);
+        booksAndTagsRepository = new BooksAndTagsRepository(executor);
     }
 
     // Созвдание БД.
+    // FIXME: Доработать.
     private void createDB()
     {
         // Создание таблицы состояний.
@@ -168,7 +197,7 @@ public class DBService
                 ");\n");
 
         // Создание таблицы категорий.
-        executor.executeUpdate("CREATE TABLE Categories (\n" +
+        executor.executeUpdate("CREATE TABLE Tags (\n" +
                 "    id   INTEGER PRIMARY KEY AUTOINCREMENT\n" +
                 "                 NOT NULL,\n" +
                 "    name TEXT    NOT NULL\n" +
@@ -188,18 +217,17 @@ public class DBService
                 "    id            INTEGER PRIMARY KEY AUTOINCREMENT\n" +
                 "                          NOT NULL,\n" +
                 "    name          TEXT    NOT NULL,\n" +
-                "    year          INTEGER NOT NULL,\n" +
+                "    year          INTEGER,\n" +
                 "    read_state_id INTEGER NOT NULL\n" +
                 "                          REFERENCES ReadStates (id),\n" +
                 "    language_id           REFERENCES Languages (id) \n" +
                 "                          NOT NULL,\n" +
-                "    extension_id          NOT NULL\n" +
-                "                          REFERENCES Extensions (id),\n" +
+                "    extension_id          REFERENCES Extensions (id),\n" +
                 "    UNIQUE (\n" +
                 "        name,\n" +
                 "        year\n" +
                 "    )\n" +
-                ");\n");
+                ");");
 
         // Создание таблицы книг и авторов.
         executor.executeUpdate("CREATE TABLE BooksAndAuthors (\n" +
@@ -213,14 +241,28 @@ public class DBService
                 ");\n");
 
         // Создание таблицы книг и категорий.
-        executor.executeUpdate("CREATE TABLE BooksAndCategories (\n" +
+        executor.executeUpdate("CREATE TABLE BooksAndTags (\n" +
                 "    id          INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    category_id         REFERENCES Categories (id),\n" +
+                "    tag_id         REFERENCES Categories (id),\n" +
                 "    book_id             REFERENCES Books (id),\n" +
                 "    UNIQUE (\n" +
-                "        category_id,\n" +
+                "        tag_id,\n" +
                 "        book_id\n" +
                 "    )\n" +
                 ");\n");
+
+        // Создание представления.
+        executor.executeUpdate("CREATE VIEW BooksView AS\n" +
+                "    SELECT books.name,\n" +
+                "           year,\n" +
+                "           Languages.name AS Language,\n" +
+                "           ReadStates.name AS ReadState\n" +
+                "      FROM Books\n" +
+                "           LEFT JOIN\n" +
+                "           ReadStates ON Books.read_state_id = ReadStates.id\n" +
+                "           LEFT JOIN\n" +
+                "           Languages ON Books.language_id = Languages.id;");
+
+        // Заполнение таблицы состояний.
     }
 }
