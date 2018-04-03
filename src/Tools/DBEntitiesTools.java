@@ -8,15 +8,8 @@ import Entities.*;
 public class DBEntitiesTools
 {
     // Добавление книги в БД.
-    public static boolean addBook(String bookName, String yearStr, int readStateId, String langStr, String extStr)
+    public static boolean addBook(String bookName, int year, int readStateId, String langStr, String extStr)
     {
-        // Получение основных данных.
-        int year = 0;
-        if (!yearStr.isEmpty())
-        {
-            year = Integer.parseInt(yearStr);
-        }
-
         // Поиск книги.
         Book book = DBService.getInstance().getBookByNameAndYear(bookName, year);
 
