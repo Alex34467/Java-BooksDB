@@ -1,6 +1,8 @@
 package GUI;
 
 import DB.DBService;
+import Entities.BooksAndAuthorsEntity;
+import Entities.BooksAndTagsEntity;
 import Tools.DBEntitiesTools;
 import Tools.ListModelTools;
 import Tools.ValidationTools;
@@ -359,8 +361,15 @@ public class BookFrame extends JDialog
     // FIXME: Реализовать.
     private boolean proceedBookFrameData()
     {
-        // Обработка книги.
-        boolean result = DBEntitiesTools.addBook(bookNameTextField.getText(), yearTextField.getText(), readComboBox.getSelectedIndex(), langTextField.getText(), fileTextField.getText());
+        // Получение данных.
+        int year = 0;
+        if (!yearTextField.getText().isEmpty())
+        {
+            year = Integer.parseInt(yearTextField.getText());
+        }
+
+        // Обработка данных книги.
+        boolean result = DBEntitiesTools.addBook(bookNameTextField.getText(), year, readComboBox.getSelectedIndex() + 1, langTextField.getText(), fileTextField.getText());
         if(result)
         {
             // Обработка авторов.
@@ -370,6 +379,31 @@ public class BookFrame extends JDialog
             // Обработка меток.
             String[] tagsNames = ListModelTools.getElementsFromListModel(tagsListModel);
             DBEntitiesTools.addTags(tagsNames);
+
+            // Получение id элементов.
+            int bookId = DBService.getInstance().getBookByNameAndYear(bookNameTextField.getText(), year).getId();
+            int[] authorsIds = DBService.getInstance().getAuthorsIdsByNames(authorsNames);
+            int[] tagsIds = DBService.getInstance().getTagsIdsByNames(tagsNames);
+
+            // Добавление записей в таблицу книг и авторов.
+            for (int authorId : authorsIds)
+            {
+                // Сборка объекта.
+                BooksAndAuthorsEntity entity = new BooksAndAuthorsEntity(bookId, authorId);
+
+                // Добавление в БД.
+                DBService.getInstance().addBookAndAuthor(entity);
+            }
+
+            // Добавление записей в таблицу книг и меток.
+            for (int tagId : tagsIds)
+            {
+                // Сборка объекта.
+                BooksAndTagsEntity entity = new BooksAndTagsEntity(bookId, tagId);
+
+                // Добавление в БД.
+                DBService.getInstance().addBookAndTag(entity);
+            }
 
             // Завершение.
             return true;
