@@ -25,7 +25,7 @@ public class TagsRepository
     public Collection<Tag> getAll()
     {
         // Подготовка запроса.
-        String query = "SELECT * FROM Categories";
+        String query = "SELECT * FROM Tags";
 
         // Выполнение запроса.
         ResultSet resultSet = executor.executeQuery(query);
@@ -38,7 +38,7 @@ public class TagsRepository
     public Tag getByName(String name)
     {
         // Подготовка запроса.
-        String query = "SELECT * FROM Categories WHERE Name = \"" + name + "\"";
+        String query = "SELECT * FROM Tags WHERE Name = \"" + name + "\"";
 
         // Выполнение.
         ResultSet resultSet = executor.executeQuery(query);
@@ -51,7 +51,7 @@ public class TagsRepository
     public String[] getAllNames()
     {
         // Подготовка запроса.
-        String query = "SELECT Name FROM Categories";
+        String query = "SELECT Name FROM Tags";
 
         // Выполнение.
         ResultSet resultSet = executor.executeQuery(query);
@@ -74,11 +74,40 @@ public class TagsRepository
         return set.toArray(new String[set.size()]);
     }
 
+    // Получение id меток по названиям.
+    public int[] getIdsByNames(String[] names)
+    {
+        // Подготовка запроса.
+        StringBuilder builder = new StringBuilder("SELECT id FROM Tags WHERE Name IN (");
+
+        for (int i = 0; i < names.length; i++)
+        {
+            builder.append("\"").append(names[i]).append("\"");
+
+            if (i != names.length - 1)
+            {
+                builder.append(", ");
+            }
+            else
+            {
+                builder.append(")");
+            }
+        }
+
+        String query = builder.toString();
+
+        // Выполнение запроса.
+        ResultSet resultSet = executor.executeQuery(query);
+
+        // Получение и аозврат результата.
+        return getIdsFromResultSet(resultSet, names.length);
+    }
+
     // Добавление метки.
     public void add(Tag tag)
     {
         // Подготовка запроса.
-        String query = "INSERT INTO Categories(Name) VALUES(\"" + tag.getName() + "\")";
+        String query = "INSERT INTO Tags(Name) VALUES(\"" + tag.getName() + "\")";
 
         // Выполнение запроса.
         executor.executeUpdate(query);
@@ -130,5 +159,30 @@ public class TagsRepository
 
         // Возврат результата.
         return tags;
+    }
+
+    // Получение массива id из ResultSet.
+    private int[] getIdsFromResultSet(ResultSet resultSet, int length)
+    {
+        // Данные.
+        int[] result = new int[length];
+
+        // Заполнение.
+        try
+        {
+            int i = 0;
+            while (resultSet.next())
+            {
+                result[i] = resultSet.getInt(1);
+                i++;
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        // Возврат результата.
+        return result;
     }
 }
