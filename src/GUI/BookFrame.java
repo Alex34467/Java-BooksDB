@@ -358,7 +358,6 @@ public class BookFrame extends JDialog
     }
 
     // Обработка данных о книге.
-    // FIXME: Реализовать.
     private boolean proceedBookFrameData()
     {
         // Получение данных.
@@ -421,6 +420,9 @@ public class BookFrame extends JDialog
     // Добавление автора в список.
     private void addAuthor()
     {
+        // Перекрасшивание списка.
+        authorsList.setBackground(Color.WHITE);
+
         // Получение данных.
         String[] authorsNames = DBService.getInstance().getAllAuthorsNames();
         String[] restrictedAuthors = ListModelTools.getElementsFromListModel(authorsListModel);
