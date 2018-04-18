@@ -5,6 +5,7 @@ import Entities.*;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.List;
 
 
 // Класс, управляющий БД.
@@ -24,6 +25,7 @@ public class DBService
     private ExtensionsRepository extensionsRepository;
     private BookAndAuthorsRepository bookAndAuthorsRepository;
     private BooksAndTagsRepository booksAndTagsRepository;
+    private BooksViewRepository booksViewRepository;
 
 
     // Геттер.
@@ -99,6 +101,12 @@ public class DBService
         return tagsRepository.getAllNames();
     }
 
+    // Получение всех записей из представления книг.
+    public List<BooksViewEntity> getAllBooksViewEntities()
+    {
+        return booksViewRepository.getAll();
+    }
+
     // Добавление автора.
     public void addAuthor(Author author)
     {
@@ -167,6 +175,7 @@ public class DBService
         extensionsRepository = new ExtensionsRepository(executor);
         bookAndAuthorsRepository = new BookAndAuthorsRepository(executor);
         booksAndTagsRepository = new BooksAndTagsRepository(executor);
+        booksViewRepository = new BooksViewRepository(executor);
     }
 
     // Созвдание БД.
@@ -253,16 +262,22 @@ public class DBService
 
         // Создание представления.
         executor.executeUpdate("CREATE VIEW BooksView AS\n" +
-                "    SELECT books.name,\n" +
-                "           year,\n" +
+                "    SELECT Authors.Name AS Author,\n" +
+                "           Books.Name,\n" +
+                "           Year,\n" +
                 "           Languages.name AS Language,\n" +
                 "           ReadStates.name AS ReadState\n" +
                 "      FROM Books\n" +
+                "           LEFT JOIN\n" +
+                "           BooksAndAuthors ON Books.id = BooksAndAuthors.book_id\n" +
+                "           LEFT JOIN\n" +
+                "           Authors ON BooksAndAuthors.author_id = Authors.id\n" +
                 "           LEFT JOIN\n" +
                 "           ReadStates ON Books.read_state_id = ReadStates.id\n" +
                 "           LEFT JOIN\n" +
                 "           Languages ON Books.language_id = Languages.id;");
 
         // Заполнение таблицы состояний.
+        executor.executeUpdate("INSERT INTO ReadStates(Name) VALUES(\"Не прочитано\"), (\"Чтение\"), (\"Прочитано\")");
     }
 }
