@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 
 // Окно для ввода текста.
@@ -38,7 +39,7 @@ public class InputTextFrame extends JDialog
     {
         // Инициализация окна.
         super(owner, title, modal);
-        setBounds(500, 500, 200, 250);
+        setBounds(500, 500, 220, 250);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -104,7 +105,7 @@ public class InputTextFrame extends JDialog
 
         // Добавдение кнопок действий на панель кнопок.
         buttonsPanel.add(okButton);
-        buttonsPanel.add(Box.createRigidArea(new Dimension(55, 0)));
+        buttonsPanel.add(Box.createRigidArea(new Dimension(75, 0)));
         buttonsPanel.add(cancelButton);
 
         // Добавление элементов.
