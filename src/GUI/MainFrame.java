@@ -1,5 +1,6 @@
 package GUI;
 
+import DB.DBService;
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
@@ -24,7 +25,7 @@ public class MainFrame extends JFrame
     {
         // Настройка окна.
         super("Books DB");
-        setBounds(800, 400, 800, 400);
+        setBounds(800, 400, 900, 400);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -41,8 +42,8 @@ public class MainFrame extends JFrame
 
         // Инициализация таблицы.
         booksTable = new JTable(new MyTableModel());
-        booksTable.setPreferredScrollableViewportSize(new Dimension(670, 400));
-        setTableColumnsWidth(booksTable, 100, 400, 40, 80, 80);
+        booksTable.setPreferredScrollableViewportSize(new Dimension(770, 400));
+        setTableColumnsWidth(booksTable, 250, 350, 40, 80, 90);
 
         // Инициализация панели прокрутки.
         JScrollPane scrollPane = new JScrollPane(booksTable);
