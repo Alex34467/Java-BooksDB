@@ -1,6 +1,5 @@
 package GUI;
 
-import DB.DBService;
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
@@ -11,8 +10,11 @@ import java.awt.event.ActionListener;
 // Главное окно.
 public class MainFrame extends JFrame
 {
-    // Данные.
+    // Таблица.
+    private MyTableModel myTableModel = new MyTableModel();
     private JTable booksTable;
+
+    // Кнопки.
     private JButton filterButton;
     private JButton addButton;
     private JButton searchButton;
@@ -20,12 +22,13 @@ public class MainFrame extends JFrame
     private JButton deleteButton;
 
 
+
     // Конструктор.
     public MainFrame()
     {
         // Настройка окна.
         super("Books DB");
-        setBounds(800, 400, 900, 400);
+        setBounds(800, 400, 1030, 400);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -41,9 +44,9 @@ public class MainFrame extends JFrame
         Container container = getContentPane();
 
         // Инициализация таблицы.
-        booksTable = new JTable(new MyTableModel());
-        booksTable.setPreferredScrollableViewportSize(new Dimension(770, 400));
-        setTableColumnsWidth(booksTable, 250, 350, 40, 80, 90);
+        booksTable = new JTable(myTableModel);
+        booksTable.setPreferredScrollableViewportSize(new Dimension(900, 400));
+        setTableColumnsWidth(booksTable, 300, 400, 40, 80, 90);
 
         // Инициализация панели прокрутки.
         JScrollPane scrollPane = new JScrollPane(booksTable);
@@ -116,9 +119,13 @@ public class MainFrame extends JFrame
                 case "Filter":
                     break;
                 case "Add":
+                    // Открытие окна.
                     BookFrame bookFrame = new BookFrame(MainFrame.this, "Add book", true);
                     bookFrame.setLocationRelativeTo(MainFrame.this);
                     bookFrame.setVisible(true);
+
+                    // Обновление списка книг.
+                    myTableModel.reloadData();
                     break;
                 case "Search":
                     break;
