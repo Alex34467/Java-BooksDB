@@ -1,8 +1,10 @@
 package DB;
 
+import Tools.MyLogger;
 import org.sqlite.JDBC;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.sql.*;
+import java.util.logging.Level;
 
 
 // Исполнитель команд к базе данных.
@@ -35,7 +37,14 @@ public class SQLiteExecutor implements DBExecutor
     {
         try
         {
+            long start = System.nanoTime();
+            MyLogger.getInstance().log(Level.INFO, "Executing: " + query);
+
             statement.executeUpdate(query);
+
+            float elapsed = (System.nanoTime() - start) / 1000000;
+            String elapsedStr = String.format("%.2f", elapsed);
+            MyLogger.getInstance().log(Level.INFO, "Executed for " + elapsedStr + " ms");
         }
         catch (SQLException e)
         {
@@ -49,7 +58,18 @@ public class SQLiteExecutor implements DBExecutor
     {
         try
         {
-            return statement.executeQuery(query);
+            // Выполнение.
+            long start = System.nanoTime();
+            MyLogger.getInstance().log(Level.INFO, "Executing: " + query);
+
+            ResultSet resultSet = statement.executeQuery(query);
+
+            float elapsed = ((float)(System.nanoTime() - start)) / 1000000;
+            String elapsedStr = String.format("%.2f", elapsed);
+            MyLogger.getInstance().log(Level.INFO, "Executed for " + elapsedStr + " ms");
+
+            // Возврат результата.
+            return resultSet;
         }
         catch (SQLException e)
         {
