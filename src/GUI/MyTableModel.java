@@ -79,4 +79,11 @@ public class MyTableModel extends AbstractTableModel
                 return "ERROR";
         }
     }
+
+    // Перезагрузка списка.
+    public void reloadData()
+    {
+        booksViewEntities = DBService.getInstance().getAllBooksViewEntities();
+        fireTableDataChanged();
+    }
 }
