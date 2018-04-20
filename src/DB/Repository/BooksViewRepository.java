@@ -92,6 +92,7 @@ public class BooksViewRepository
                 if (i == rowsCount - 1)
                 {
                     // Сборка объекта.
+                    authors = authors.substring(0, authors.length() - 2);
                     BooksViewEntity booksViewEntity = new BooksViewEntity(authors, name, year, language, readState);
                     authors = "";
 
