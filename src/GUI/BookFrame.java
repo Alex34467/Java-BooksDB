@@ -420,7 +420,7 @@ public class BookFrame extends JDialog
     // Добавление автора в список.
     private void addAuthor()
     {
-        // Перекрасшивание списка.
+        // Перекрашивание списка.
         authorsList.setBackground(Color.WHITE);
 
         // Получение данных.
@@ -445,6 +445,9 @@ public class BookFrame extends JDialog
     // Добавление тега в список.
     private void addTag()
     {
+        // Перекрашивание списка.
+        tagsList.setBackground(Color.WHITE);
+
         // Получение данных.
         String[] tagsNames = DBService.getInstance().getAllTagsNames();
         String[] restrictedTags = ListModelTools.getElementsFromListModel(tagsListModel);
@@ -507,7 +510,6 @@ public class BookFrame extends JDialog
                     break;
 
                 // Добавление книги.
-                // FIXME: Реализовать.
                 case "Add book":
                     // Проверка данных.
                     if (validateBookForm())
